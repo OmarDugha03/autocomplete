@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label"
 import { getUsers } from "@/lib/getUsers"
 import useAutocompleteStore from "@/lib/store"
 import { useQuery } from "@tanstack/react-query"
-import clsx from "clsx"
 import { useState } from "react"
 import { useDebounce } from "use-debounce"
 
@@ -38,9 +37,15 @@ export default function Home() {
   }
   if (isLoading) return <div>Loading...</div>
   if (error) return <div>Error: {error.message}</div>
+  function handleAutoComplete(e: any) {
+    const selectedCompanyName = e.target.textContent
+    setInputValue(selectedCompanyName)
+    setValue(selectedCompanyName)
+  }
+
   return (
-    <main className="mx-4 mt-4 lg:w-[40%]">
-      <div className="flex items-center justify-between">
+    <main className="mx-4 mt-4 lg:w-[40%] ">
+      <div className="flex items-center justify-between relative">
         <Label htmlFor="com">Company Name</Label>
         <ThemeToggle />
       </div>
@@ -60,27 +65,33 @@ export default function Home() {
       <section className="mt-4">
         {currentPageData?.map((item) => (
           <p
+            onClick={handleAutoComplete}
             key={item.id}
-            className={clsx(
-              item.company.name
-                .replace(/\s/g, "")
-                .toLowerCase()
-                .includes(debouncedValue.replace(/\s/g, "")) && value !== ""
-                ? "bg-yellow-500"
-                : "",
-              "my-4 rounded-lg p-4 hover:bg-gray-200 dark:hover:bg-slate-50 dark:hover:text-black transition-all duration-300"
-            )}>
-            {item.company.name}
+            className="my-4 rounded-lg p-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-slate-50 dark:hover:text-black transition-all duration-300">
+            {item.company.name.split(" ").map((word, index) => (
+              <span
+                key={index}
+                className={
+                  word.toLowerCase().includes(debouncedValue) &&
+                  debouncedValue !== ""
+                    ? "bg-yellow-500"
+                    : ""
+                }>
+                {word}
+              </span>
+            ))}
           </p>
         ))}
       </section>
-      <section className="space-x-4">
+      <section className="space-x-4 absolute bottom-12">
         <Button
           onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}>
+          disabled={currentPage === 1}
+          className="transition-all duration-300">
           Previous
         </Button>
         <Button
+          className="transition-all duration-300"
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={endIdx >= (filteredData?.length || 0)}>
           Next
