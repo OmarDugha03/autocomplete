@@ -1,4 +1,5 @@
 "use client"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,7 +40,10 @@ export default function Home() {
   if (error) return <div>Error: {error.message}</div>
   return (
     <main className="mx-4 mt-4 lg:w-[40%]">
-      <Label htmlFor="com">Company Name</Label>
+      <div className="flex items-center justify-between">
+        <Label htmlFor="com">Company Name</Label>
+        <ThemeToggle />
+      </div>
       <Input
         id="com"
         placeholder="please and any value"
@@ -64,7 +68,7 @@ export default function Home() {
                 .includes(debouncedValue.replace(/\s/g, "")) && value !== ""
                 ? "bg-yellow-500"
                 : "",
-              "my-4 rounded-lg p-4 hover:bg-gray-200 transition-all duration-300"
+              "my-4 rounded-lg p-4 hover:bg-gray-200 dark:hover:bg-slate-50 dark:hover:text-black transition-all duration-300"
             )}>
             {item.company.name}
           </p>
