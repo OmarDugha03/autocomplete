@@ -4,13 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getUsers } from "@/lib/getUsers"
-import useAutocompleteStore from "@/lib/store"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { useDebounce } from "use-debounce"
 
 export default function Home() {
-  /* Hooks  */
   const { data, error, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: getUsers,
@@ -21,8 +19,6 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 5
 
-  const { setInputValue } = useAutocompleteStore()
-
   const filteredData = data?.filter((item) =>
     item.company.name.toLowerCase().includes(debouncedValue.toLowerCase())
   )
@@ -30,16 +26,13 @@ export default function Home() {
   const endIdx = startIdx + pageSize
   const currentPageData = filteredData?.slice(startIdx, endIdx)
 
-  /* req handling */
   function handleDebounce(e: any) {
     setValue(e.target.value)
-    setInputValue(e.target.value)
   }
   if (isLoading) return <div>Loading...</div>
   if (error) return <div>Error: {error.message}</div>
   function handleAutoComplete(e: any) {
     const selectedCompanyName = e.target.textContent
-    setInputValue(selectedCompanyName)
     setValue(selectedCompanyName)
   }
 
@@ -56,12 +49,6 @@ export default function Home() {
         onChange={handleDebounce}
         className="mt-3 "
       />
-
-      {/* Testing the Debounce :     
-        <p>Actual value: {value}</p>
-      <p>Debounce value: {debouncedValue}</p> */}
-
-      {/*  Fetching the Data */}
       <section className="mt-4">
         {currentPageData?.map((item) => (
           <p
