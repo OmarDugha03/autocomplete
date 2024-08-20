@@ -1,4 +1,5 @@
 "use client"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getUsers } from "@/lib/getUsers"
@@ -17,12 +18,18 @@ export default function Home() {
   })
   const [value, setValue] = useState("")
   const [debouncedValue] = useDebounce(value, 500)
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 5
 
   const { setInputValue } = useAutocompleteStore()
 
   const filteredData = data?.filter((item) =>
     item.company.name.toLowerCase().includes(debouncedValue.toLowerCase())
   )
+  const startIdx = (currentPage - 1) * pageSize
+  const endIdx = startIdx + pageSize
+  const currentPageData = filteredData?.slice(startIdx, endIdx)
+
   /* req handling */
   function handleDebounce(e: any) {
     setValue(e.target.value)
@@ -46,8 +53,8 @@ export default function Home() {
       <p>Debounce value: {debouncedValue}</p> */}
 
       {/*  Fetching the Data */}
-      <section className="mt-4  ">
-        {filteredData?.map((item) => (
+      <section className="mt-4">
+        {currentPageData?.map((item) => (
           <p
             key={item.id}
             className={clsx(
@@ -57,11 +64,23 @@ export default function Home() {
                 .includes(debouncedValue.replace(/\s/g, "")) && value !== ""
                 ? "bg-yellow-500"
                 : "",
-              "my-4 rounded-lg p-4"
+              "my-4 rounded-lg p-4 hover:bg-gray-200 transition-all duration-300"
             )}>
             {item.company.name}
           </p>
         ))}
+      </section>
+      <section className="space-x-4">
+        <Button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}>
+          Previous
+        </Button>
+        <Button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={endIdx >= (filteredData?.length || 0)}>
+          Next
+        </Button>
       </section>
     </main>
   )
